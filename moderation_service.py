@@ -1,7 +1,8 @@
 """
 moderation_service.py
 Model Serving & Policy Decision Engine for Content Moderation.
-Loads fine-tuned DistilBERT and applies business safety policies.
+Uses TF-IDF + Logistic Regression baseline model for cloud deployment.
+(DistilBERT fine-tuned model available locally - see README)
 """
 
 import os
@@ -15,8 +16,8 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import joblib
+from scipy.sparse import hstack
 
 from text_cleaner import clean_text
 import database
@@ -31,18 +32,10 @@ LABEL_COLUMNS = [
 ]
 
 # ----------------------------------------------------------------
-# Auto-download model from Hugging Face Hub if not present locally
-# (runs automatically when deployed to Hugging Face Spaces)
+# Auto-download baseline model from Hugging Face Hub if not present
 # ----------------------------------------------------------------
-HF_REPO = "hellosarthak25/content-moderation-distilbert"
-MODEL_DIR = "./distilbert_moderation"
 BASELINE_PATH = "./baseline_model.joblib"
-
-if not os.path.exists(MODEL_DIR) or not os.path.exists(os.path.join(MODEL_DIR, "model.safetensors")):
-    print(f"Downloading DistilBERT model from Hugging Face Hub ({HF_REPO})...")
-    from huggingface_hub import snapshot_download
-    snapshot_download(repo_id=HF_REPO, local_dir=MODEL_DIR, ignore_patterns=["baseline_model.joblib"])
-    print("Model downloaded successfully!")
+HF_REPO = "hellosarthak25/content-moderation-distilbert"
 
 if not os.path.exists(BASELINE_PATH):
     print("Downloading baseline model from Hugging Face Hub...")
@@ -50,41 +43,20 @@ if not os.path.exists(BASELINE_PATH):
     hf_hub_download(repo_id=HF_REPO, filename="baseline_model.joblib", local_dir=".")
     print("Baseline model downloaded successfully!")
 
-# Locate trained model directory
-POSSIBLE_PATHS = [
-    MODEL_DIR,
-    "models/distilbert_moderation",
-    "./distilbert_moderation",
-]
-
-MODEL_PATH = None
-for path in POSSIBLE_PATHS:
-    if os.path.exists(path) and (os.path.exists(os.path.join(path, "model.safetensors")) or os.path.exists(os.path.join(path, "pytorch_model.bin"))):
-        MODEL_PATH = path
-        break
-
-if not MODEL_PATH:
-    raise FileNotFoundError(
-        "Could not find trained DistilBERT model. Looked in: " + ", ".join(POSSIBLE_PATHS)
-    )
-
-print(f"Loading Content Moderation model from: '{MODEL_PATH}'...")
-
-# Use MPS (Apple Silicon GPU) if available, otherwise CPU
-DEVICE = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-print(f"Inference Device: {DEVICE}")
-
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
-model.to(DEVICE)
-model.eval()
-print("✓ Model and tokenizer successfully loaded into memory!")
+# ----------------------------------------------------------------
+# Load model artifacts (TF-IDF vectorizers + Logistic Regression)
+# ----------------------------------------------------------------
+print(f"Loading Content Moderation baseline model...")
+artifacts = joblib.load(BASELINE_PATH)
+vectorizers = artifacts["vectorizers"]
+models = artifacts["models"]
+print("Model loaded successfully!")
 
 
 def evaluate_policy(scores: dict) -> tuple[str, str]:
     """
     Applies safety rules and business policies to raw toxicity probabilities.
-    
+
     Verdicts:
     - AUTO_BLOCKED: High confidence on severe harm (threat, severe toxicity, hate speech)
     - FLAGGED_FOR_REVIEW: Borderline toxicity needing human moderator inspection
@@ -99,12 +71,12 @@ def evaluate_policy(scores: dict) -> tuple[str, str]:
         return "AUTO_BLOCKED", "identity_hate"
     if scores.get("toxic", 0.0) >= 0.75:
         return "AUTO_BLOCKED", "toxic"
-    
+
     # 2. Borderline / Moderate triggers (queue for human review)
     for label in ["toxic", "insult", "obscene", "identity_hate"]:
         if scores.get(label, 0.0) >= 0.40:
             return "FLAGGED_FOR_REVIEW", label
-            
+
     # 3. Clean content
     return "APPROVED", "clean"
 
@@ -113,34 +85,32 @@ def moderate_comment(text: str, log_to_db: bool = True) -> dict:
     """
     Moderates a single piece of text:
     1. Preprocesses/cleans text
-    2. Runs inference through DistilBERT
-    3. Evaluates moderation policy
-    4. Records entry in SQLite database
+    2. Extracts TF-IDF features
+    3. Runs inference through Logistic Regression classifiers
+    4. Evaluates moderation policy
+    5. Records entry in SQLite database
     """
     t0 = time.time()
-    
+
     cleaned = clean_text(text)
     if not cleaned:
         cleaned = "empty_comment"
-        
-    inputs = tokenizer(
-        cleaned,
-        max_length=128,
-        padding="max_length",
-        truncation=True,
-        return_tensors="pt"
-    ).to(DEVICE)
-    
-    with torch.no_grad():
-        outputs = model(**inputs)
-        probs = torch.sigmoid(outputs.logits).cpu().numpy()[0]
-        
-    scores = {col: float(probs[i]) for i, col in enumerate(LABEL_COLUMNS)}
-    
+
+    # Extract TF-IDF features (word + character n-grams)
+    feat_word = vectorizers["word"].transform([cleaned])
+    feat_char = vectorizers["char"].transform([cleaned])
+    X = hstack([feat_word, feat_char]).tocsr()
+
+    # Predict probability for each toxicity label
+    scores = {}
+    for col in LABEL_COLUMNS:
+        prob = models[col].predict_proba(X)[0, 1]
+        scores[col] = float(prob)
+
     # Decision Engine
     verdict, primary_category = evaluate_policy(scores)
     latency_ms = (time.time() - t0) * 1000
-    
+
     result = {
         "text": text,
         "cleaned_text": cleaned,
@@ -149,7 +119,7 @@ def moderate_comment(text: str, log_to_db: bool = True) -> dict:
         "scores": {k: round(v, 4) for k, v in scores.items()},
         "latency_ms": round(latency_ms, 2),
     }
-    
+
     # Save to SQLite database
     if log_to_db:
         db_record = database.log_comment(
@@ -161,5 +131,5 @@ def moderate_comment(text: str, log_to_db: bool = True) -> dict:
         )
         result["log_id"] = db_record["id"]
         result["timestamp"] = db_record["timestamp"]
-        
+
     return result
