@@ -417,7 +417,10 @@ def serve_dashboard():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
+    port = int(os.environ.get("PORT", 7860))
+    host = os.environ.get("HOST", "0.0.0.0")
     print("\n" + "=" * 65)
-    print("🚀 Starting Content Moderation Server at http://localhost:8000")
+    print(f"🚀 Starting Content Moderation Server at http://{host}:{port}")
     print("=" * 65 + "\n")
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run("app:app", host=host, port=port, reload=False)

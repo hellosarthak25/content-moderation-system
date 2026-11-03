@@ -30,8 +30,29 @@ LABEL_COLUMNS = [
     "identity_hate",
 ]
 
+# ----------------------------------------------------------------
+# Auto-download model from Hugging Face Hub if not present locally
+# (runs automatically when deployed to Hugging Face Spaces)
+# ----------------------------------------------------------------
+HF_REPO = "hellosarthak25/content-moderation-distilbert"
+MODEL_DIR = "./distilbert_moderation"
+BASELINE_PATH = "./baseline_model.joblib"
+
+if not os.path.exists(MODEL_DIR) or not os.path.exists(os.path.join(MODEL_DIR, "model.safetensors")):
+    print(f"Downloading DistilBERT model from Hugging Face Hub ({HF_REPO})...")
+    from huggingface_hub import snapshot_download
+    snapshot_download(repo_id=HF_REPO, local_dir=MODEL_DIR, ignore_patterns=["baseline_model.joblib"])
+    print("Model downloaded successfully!")
+
+if not os.path.exists(BASELINE_PATH):
+    print("Downloading baseline model from Hugging Face Hub...")
+    from huggingface_hub import hf_hub_download
+    hf_hub_download(repo_id=HF_REPO, filename="baseline_model.joblib", local_dir=".")
+    print("Baseline model downloaded successfully!")
+
 # Locate trained model directory
 POSSIBLE_PATHS = [
+    MODEL_DIR,
     "models/distilbert_moderation",
     "./distilbert_moderation",
 ]
