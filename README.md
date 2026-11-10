@@ -1,278 +1,212 @@
-# 🛡️ AI Content Moderation System
+# 🛡️ AI-Powered Content Moderation System
 
 <p align="center">
-  <b>An AI-powered content moderation platform for detecting and classifying toxic online comments using NLP and Deep Learning.</b>
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/DistilBERT-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" />
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" />
+  <img src="https://img.shields.io/badge/Machine_Learning-FF6F00?style=for-the-badge&logo=scikitlearn&logoColor=white" />
+</p>
+
+<p align="center">
+  <b>Making online spaces safer, one comment at a time.</b>
+  <br/>
+  An intelligent, AI-driven system that detects, classifies, and moderates toxic online comments using Natural Language Processing and Deep Learning.
 </p>
 
 <p align="center">
   <a href="https://content-moderation-system-nf9s.onrender.com/">
-    <img src="https://img.shields.io/badge/🚀_Live_Demo-Try_Now-6366F1?style=for-the-badge" alt="Live Demo"/>
+    <img src="https://img.shields.io/badge/🚀_EXPLORE_LIVE_PROJECT-6366F1?style=for-the-badge" />
   </a>
   <a href="https://github.com/hellosarthak25/content-moderation-system">
-    <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github" alt="GitHub"/>
+    <img src="https://img.shields.io/badge/VIEW_SOURCE_CODE-181717?style=for-the-badge&logo=github" />
   </a>
 </p>
 
 ---
 
-## 🌐 Live Demo
+## 📌 Project Overview
 
-**Try the application here:**
+The rapid growth of online communities has made it increasingly difficult to maintain safe and respectful digital environments. Millions of comments are shared across online platforms, and some contain toxic, abusive, or hateful language.
 
-👉 https://content-moderation-system-nf9s.onrender.com/
+**AI-Powered Content Moderation System** addresses this challenge by using machine learning and Natural Language Processing (NLP) to automatically identify harmful language and assist in content moderation.
 
-Explore the interactive dashboard, submit comments, view toxicity predictions, and inspect moderation decisions in real time.
+The system uses a fine-tuned **DistilBERT transformer model** to analyze comments and perform **multi-label toxicity classification** across six different categories.
+
+Unlike a simple keyword-based filter, the model analyzes the context of text to identify different forms of toxic language. Based on its predictions and moderation policies, the system generates an appropriate moderation decision.
+
+### 🎯 What Does the System Detect?
+
+The system identifies six categories of toxic or harmful language:
+
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🔴 01. Toxic</h3>
+      General harmful, hostile, or disrespectful language that creates an unpleasant interaction.
+    </td>
+    <td width="50%">
+      <h3>🚨 02. Severe Toxic</h3>
+      Extremely aggressive, abusive, or highly harmful language.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🔞 03. Obscene</h3>
+      Vulgar, explicit, or inappropriate expressions.
+    </td>
+    <td width="50%">
+      <h3>⚠️ 04. Threat</h3>
+      Language expressing intimidation, threats, or intentions to cause harm.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>💬 05. Insult</h3>
+      Offensive, demeaning, or insulting statements directed towards others.
+    </td>
+    <td width="50%">
+      <h3>🌐 06. Identity Hate</h3>
+      Hateful or discriminatory language targeting individuals based on their identity.
+    </td>
+  </tr>
+</table>
+
+**Important:** These categories are independently evaluated. A single comment can belong to multiple categories at the same time.
 
 ---
 
-## 📌 About the Project
+## ⚡ Explore the Live Application
 
-The **AI Content Moderation System** is an end-to-end machine learning application designed to automatically identify and classify harmful or inappropriate content in online comments.
+<p align="center">
+  <a href="https://content-moderation-system-nf9s.onrender.com/">
+    <img src="https://img.shields.io/badge/OPEN_LIVE_DASHBOARD-Visit_Application-6366F1?style=for-the-badge&logo=render&logoColor=white" />
+  </a>
+</p>
 
-It uses a fine-tuned **DistilBERT transformer model** to perform multi-label toxicity classification, allowing a single comment to be evaluated across multiple toxicity categories simultaneously.
+The application provides an interactive dashboard where users can:
 
-The system combines NLP, deep learning, a FastAPI backend, and an interactive web dashboard to provide automated moderation decisions and maintain an audit history of processed comments.
+- Submit comments for toxicity analysis.
+- View predicted toxicity categories.
+- Examine category-wise prediction scores.
+- See automated moderation decisions.
+- Explore moderation statistics and audit logs.
 
-### 🎯 Problem Statement
+**Try it here:** https://content-moderation-system-nf9s.onrender.com/
 
-Online platforms receive thousands of comments every day. Manually identifying toxic, abusive, or harmful content is time-consuming and difficult to scale.
-
-This project aims to simplify that process through automated toxicity detection and a structured moderation system.
+---
 
 ## ✨ Key Features
 
-- **Multi-Label Toxicity Detection:** Identifies multiple toxicity categories within a single comment.
-- **DistilBERT-Based Classification:** Uses a fine-tuned transformer model for contextual text understanding.
-- **Real-Time Comment Analysis:** Processes user-submitted comments through an interactive dashboard.
-- **Automated Moderation Decisions:** Classifies comments into three moderation outcomes:
-  - `APPROVED` – Clean comments.
-  - `FLAGGED_FOR_REVIEW` – Comments requiring further review.
-  - `AUTO_BLOCKED` – Comments identified as high-severity violations.
-- **Toxicity Probability Scores:** Displays prediction scores for different toxicity categories.
-- **Interactive Dashboard:** Provides a user-friendly interface with moderation statistics and visual indicators.
-- **Database Audit Logging:** Stores moderation events and decisions using SQLite.
-- **REST API:** Supports individual and batch comment moderation.
-
-## 🧠 Toxicity Categories
-
-The model detects six different categories:
-
-| Category | Description |
-|---|---|
-| Toxic | Generally harmful or abusive language |
-| Severe Toxic | Highly harmful or aggressive language |
-| Obscene | Vulgar or inappropriate language |
-| Threat | Threatening language |
-| Insult | Insulting or offensive language |
-| Identity Hate | Hate directed towards identity groups |
-
-## 🏗️ System Architecture & Workflow
-
-The project follows a structured machine learning pipeline:
-
-**1. Exploratory Data Analysis (EDA)**
-
-- Analyzes the dataset and label distribution.
-- Studies class imbalance and relationships between toxicity categories.
-
-**2. Text Preprocessing**
-
-- Cleans and normalizes text.
-- Expands contractions.
-- Handles repeated characters.
-- Performs stratified data splitting.
-
-**3. Baseline Model Development**
-
-- Uses TF-IDF for text feature extraction.
-- Implements Logistic Regression classifiers.
-- Establishes a baseline for model comparison.
-
-**4. Transformer Model Training**
-
-- Fine-tunes `distilbert-base-uncased`.
-- Uses `BCEWithLogitsLoss` for multi-label classification.
-- Generates toxicity scores across all six categories.
-
-**5. Backend & Moderation Engine**
-
-- Uses FastAPI to handle moderation requests.
-- Applies moderation policies to model predictions.
-- Generates automated moderation decisions.
-
-**6. Database & Dashboard**
-
-- Stores moderation records using SQLite and SQLAlchemy.
-- Displays predictions, moderation statistics, and audit logs through the web dashboard.
-
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|---|---|
-| Python | Core programming language |
-| Pandas & NumPy | Data manipulation and analysis |
-| Scikit-learn | Baseline machine learning model |
-| NLP | Text preprocessing and classification |
-| PyTorch | Deep learning framework |
-| Hugging Face Transformers | DistilBERT implementation |
-| DistilBERT | Multi-label toxicity classification |
-| FastAPI | Backend and REST API |
-| SQLAlchemy | Database operations |
-| SQLite | Moderation audit logging |
-| HTML, CSS & JavaScript | Interactive dashboard |
-| Render | Application deployment |
-
-## 📂 Project Structure
-
-```text
-content-moderation-system/
-│
-├── distilbert_moderation/
-│   └── Fine-tuned DistilBERT model and tokenizer
-│
-├── app.py
-│   └── FastAPI server and interactive dashboard
-│
-├── moderation_service.py
-│   └── Model inference and moderation policy engine
-│
-├── database.py
-│   └── SQLite database and audit logging
-│
-├── text_cleaner.py
-│   └── Text preprocessing utilities
-│
-├── stage1_eda.py
-│   └── Exploratory data analysis
-│
-├── stage2_clean.py
-│   └── Text cleaning and data preparation
-│
-├── stage3_baseline.py
-│   └── TF-IDF and Logistic Regression baseline
-│
-├── stage4_transformer.py
-│   └── DistilBERT fine-tuning
-│
-├── requirements.txt
-│   └── Project dependencies
-│
-├── Dockerfile
-│   └── Container configuration
-│
-└── README.md
-```
-
-## ⚙️ Installation & Setup
-
-Follow these steps to run the project locally.
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/hellosarthak25/content-moderation-system.git
-```
-
-### 2. Navigate to the Project Directory
-
-```bash
-cd content-moderation-system
-```
-
-### 3. Create a Virtual Environment
-
-```bash
-python -m venv venv
-```
-
-Activate the environment:
-
-**Windows:**
-```bash
-venv\Scripts\activate
-```
-
-**Linux / macOS:**
-```bash
-source venv/bin/activate
-```
-
-### 4. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 5. Run the Application
-
-```bash
-python app.py
-```
-
-### 6. Open in Browser
-
-Visit:
-
-```text
-http://localhost:8000
-```
-
-The content moderation dashboard will be available locally.
-
-## 🔌 API Endpoints
-
-The application provides the following REST API endpoints:
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/moderate` | Moderate a single comment |
-| POST | `/api/moderate/batch` | Moderate multiple comments |
-| GET | `/api/logs` | Retrieve moderation audit logs |
-| GET | `/api/stats` | Retrieve moderation statistics |
-| POST | `/api/logs/clear` | Clear moderation audit logs |
-
-### Example API Request
-
-**Endpoint:** `/api/moderate`
-
-```json
-{
-  "text": "Have a great day!"
-}
-```
-
-The API returns the moderation result, including toxicity predictions and the corresponding moderation decision.
-
-## 🚀 Deployment
-
-The application is deployed using **Render**.
-
-🔗 **Live Application:** https://content-moderation-system-nf9s.onrender.com/
-
-## 🔮 Future Improvements
-
-- Improve model performance through further experimentation and optimization.
-- Add support for additional languages.
-- Introduce batch file uploads for large-scale moderation.
-- Improve moderation analytics and reporting.
-- Explore integration with social media platforms through APIs.
-
-## 🤝 Contributing
-
-Contributions, suggestions, and feedback are welcome!
-
-If you have ideas for improving the project, feel free to fork the repository and submit a pull request.
-
-## 📄 License
-
-This project is intended for educational and research purposes.
+| Feature | Description |
+|:---|:---|
+| 🧠 AI-Powered Detection | Uses fine-tuned DistilBERT for contextual toxicity classification. |
+| 🏷️ Multi-Label Classification | Detects multiple toxicity categories in a single comment. |
+| 📊 Prediction Scores | Displays category-wise toxicity scores. |
+| ⚡ Automated Moderation | Generates moderation decisions based on prediction scores and policy rules. |
+| 🖥️ Interactive Dashboard | Provides a clean interface for comment analysis and monitoring. |
+| 📦 Batch Moderation | Supports processing multiple comments through the API. |
+| 🗄️ Audit Logging | Stores moderation activity using SQLite and SQLAlchemy. |
+| 📈 Moderation Analytics | Provides statistics about processed comments and moderation outcomes. |
+| 🔌 REST API | Provides endpoints for moderation and retrieving system information. |
 
 ---
 
-<p align="center">
-  <b>Built with Python, NLP, Machine Learning & Deep Learning ❤️</b>
-</p>
+## 🏗️ How It Works
 
-<p align="center">
-  ⭐ If you find this project interesting, consider giving the repository a star!
-</p>
+The system follows a complete machine learning pipeline, starting from data exploration and preprocessing to model training, prediction, and automated moderation.
+
+```mermaid
+flowchart TD
+    A["💬 User Submits Comment"] --> B["Text Preprocessing"]
+    B --> C["Fine-Tuned DistilBERT"]
+    C --> D["Multi-Label Classification"]
+    D --> E["Six Toxicity Prediction Scores"]
+    E --> F["Moderation Policy Engine"]
+    F --> G{"Moderation Decision"}
+    G --> H["APPROVED"]
+    G --> I["FLAGGED FOR REVIEW"]
+    G --> J["AUTO BLOCKED"]
+    H --> K["SQLite Audit Logs"]
+    I --> K
+    J --> K
+    K --> L["Dashboard & Analytics"]
+
+    style A fill:#334155,color:#fff
+    style C fill:#4338ca,color:#fff
+    style F fill:#6d28d9,color:#fff
+    style H fill:#166534,color:#fff
+    style I fill:#a16207,color:#fff
+    style J fill:#991b1b,color:#fff
+```
+
+### Moderation Decisions
+
+The system generates three possible moderation outcomes:
+
+| Decision | Meaning |
+|:---|:---|
+| <img src="https://img.shields.io/badge/APPROVED-16A34A?style=flat-square" /> | The comment is considered acceptable under the moderation policy. |
+| <img src="https://img.shields.io/badge/FLAGGED_FOR_REVIEW-D97706?style=flat-square" /> | The comment requires additional attention or review. |
+| <img src="https://img.shields.io/badge/AUTO_BLOCKED-DC2626?style=flat-square" /> | The comment meets the configured criteria for automatic blocking. |
+
+---
+
+## 🧪 Model Development Pipeline
+
+The project was developed through four major machine learning stages.
+
+### Stage 1 — Exploratory Data Analysis (EDA)
+
+**File:** `stage1_eda.py`
+
+- Explores the dataset and its structure.
+- Analyzes the distribution of toxicity labels.
+- Identifies class imbalance.
+- Studies the co-occurrence of different toxicity categories.
+
+### Stage 2 — Text Preprocessing
+
+**File:** `stage2_clean.py`
+
+- Cleans raw text.
+- Expands contractions.
+- Normalizes repeated characters.
+- Performs stratified training and validation splitting.
+
+### Stage 3 — Machine Learning Baseline
+
+**File:** `stage3_baseline.py`
+
+- Uses TF-IDF for text feature extraction.
+- Incorporates word and character n-grams.
+- Trains Logistic Regression classifiers for the six toxicity labels.
+- Establishes a baseline for comparison with the transformer model.
+
+### Stage 4 — Transformer Model Training
+
+**File:** `stage4_transformer.py`
+
+- Uses `distilbert-base-uncased`.
+- Fine-tunes the transformer for multi-label classification.
+- Uses PyTorch and Hugging Face Transformers.
+- Implements `BCEWithLogitsLoss` for multi-label learning.
+
+The trained model is then integrated into the moderation service for comment analysis.
+
+---
+
+## 🛠️ Technology Stack
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Technologies</th>
+  </tr>
+  <tr>
+    <td><b>Programming Language</b></td>
+    <td>Python</td>
+  </tr>
+  <tr>
+    <td><b>Machine Learning</b></td>
+    <
